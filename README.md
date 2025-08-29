@@ -1,6 +1,6 @@
 # SpecVLA
 
-Implementation for the paper "**Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance" (EMNLP 2025).
+Implementation for the paper "**Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance" (EMNLP 2025).**"
 ## Background
 #### Abstract 
 
