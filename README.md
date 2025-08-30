@@ -15,18 +15,18 @@ which enhance the acceptance length by $44\%$, achieving $1.42\times$ speedup co
 The success of the Spec-VLA framework highlights the potential for broader application of speculative execution in VLA prediction scenarios.
 
 #### Proposed Methods
-* The Spec-VLA framework, the first SD framework for  Autoregressive VLA generation accelleration. The Spec-VLA utilize multimodal features, and incoporate multiple advanced methodologies for SD, including tree-attention and dynamic draft tree decoding.
+* The Spec-VLA framework is the first SD framework for  Autoregressive VLA generation acceleration. The Spec-VLA utilizes multimodal features and incorporates multiple advanced methodologies for SD, including tree-attention and dynamic draft tree decoding.
 
 ![](Assets/spec_vla.jpg)
 
-* Distance-sensitive relaxation of acceptance. For VLA prediction scenario, we propose to relax the acceptance condition while controling the prediction precision with the predefined relaxation threshold. 
+* Distance-sensitive relaxation of acceptance. We propose to relax the acceptance condition for the VLA prediction scenario while controlling the prediction precision with the predefined relaxation threshold. 
 
 ![](Assets/relaxed_accept.png)
 
 #### Practical Advantages 
-* Compared with the previously proposed VLA accelleration methods such as PD-VLA, the Spec-VLA do not need full-parameter finetuning for the backbone models, which decouples the accelleration framework and the original models, and supports efficient adaptation for downstream tasks.
-* The verification mechenism ensures the generation quality, and provide a predefined threshold parameter r to balance the speed-quality tradeoff.
-* Achieves 22%-42% accelleration in the LIBERO dataset, without compromising the prediction accuracy.
+* Compared with the previously proposed VLA acceleration methods, such as PD-VLA, the Spec-VLA does not need full-parameter finetuning for the backbone models, which decouples the acceleration framework and the original models, and supports efficient adaptation for downstream tasks.
+* The verification mechanism ensures the generation quality and provides a predefined threshold parameter r to balance the speed-quality tradeoff.
+* Achieves 22%-42% acceleration in the LIBERO dataset, without compromising the prediction accuracy.
 
 ## Setup Guidance
 #### Requirements & Installation
