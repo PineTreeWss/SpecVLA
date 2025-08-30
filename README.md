@@ -15,31 +15,18 @@ which enhance the acceptance length by $44\%$, achieving $1.42\times$ speedup co
 The success of the Spec-VLA framework highlights the potential for broader application of speculative execution in VLA prediction scenarios.
 
 #### Proposed Methods
-* The Spec-VLA framework, the first SD framework for VLA generation scenario.
+* The Spec-VLA framework, the first SD framework for  Autoregressive VLA generation accelleration. The Spec-VLA utilize multimodal features, and incoporate multiple advanced methodologies for SD, including tree-attention and dynamic draft tree decoding.
 
 ![](Assets/spec_vla.jpg)
 
-* Distance-sensitive relaxation of acceptance. Relax the acceptance condition while controling the prediction precision with the predefined threshold. 
+* Distance-sensitive relaxation of acceptance. For VLA prediction scenario, we propose to relax the acceptance condition while controling the prediction precision with the predefined relaxation threshold. 
 
 ![](Assets/relaxed_accept.png)
 
 #### Practical Advantages 
-* BCKD further boosts a wide group of NART models (CMLM/GLAT/BC-T) than original KD methodology.
-* BC-Transformer achieves the translation quality comparable with ART models in **all language pairs (Ee-De/En-Ro) without Knowledge Distillation**.
-* BC-Transformer can be further improved via BCKD and outperforms the DA-T(with KD) by 0.9 BLEU.
-* Both methods (BCKD & BC-Transformer) preserve the generation speedup of the NART models.
-
-#### **BCKD Datasets**
-* We release the BCKD dataset of WMT14 En-De/De-En, WMT16 En-Ro/Ro-En.
-* Refer to the following link for BCKD data downloading:
-   [https://drive.google.com/drive/folders/1z3aw0ZiFTmpTWP8cc4mgnRcKCVKvQhdz?usp=sharing](https://drive.google.com/drive/folders/1foHdMQID-BewDAXNOKIj2Q4z3SlcRQLJ?usp=drive_link)
-#### **BC-Transformer Codes**
-This repo is modified from [``DA-Transformer/v1.0``](https://github.com/thu-coai/DA-Transformer/tree/v1.0), please see the original documentation for more information.
-
-#### Features:
-
-* We extend the original DA-Transformer model with a bidirectional training loss. 
-* We extend the original L2R directional beam search to the bidirectional ensemble search (BES). 
+* Compared with the previously proposed VLA accelleration methods such as PD-VLA, the Spec-VLA do not need full-parameter finetuning for the backbone models, which decouples the accelleration framework and the original models, and supports efficient adaptation for downstream tasks.
+* The verification mechenism ensures the generation quality, and provide a predefined threshold parameter r to balance the speed-quality tradeoff.
+* Achieves 22%-42% accelleration in the LIBERO dataset, without compromising the prediction accuracy.
 
 ## Setup Guidance
 #### Requirements & Installation
