@@ -1,6 +1,6 @@
 # SpecVLA
 
-Implementation for the paper "**Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance" (EMNLP 2025).**"
+Implementation for the paper "**Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance" (EMNLP 2025).**
 ## Background
 #### Abstract 
 
@@ -11,7 +11,7 @@ its application to VLA models remains unexplored. This work introduces Spec-VLA,
 Due to the difficulty of the action prediction task and the greedy decoding mechanism of the VLA models, the direct application of the advanced SD framework to the VLA prediction task yields 
 a minor speed improvement. To boost the generation speed, we propose an effective mechanism to relax acceptance utilizing the relative distances represented by the action tokens of the VLA model. 
 Empirical results across diverse test scenarios affirm the effectiveness of the Spec-VLA framework, and further analysis substantiates the impact of our proposed strategies, 
-which enhance the acceptance length by $44\%$, achieving $1.42\times$ speedup compared with the OpenVLA baseline, without compromising the success rate. 
+which enhance the acceptance length by 44%, achieving $1.42\times$ speedup compared with the OpenVLA baseline, without compromising the success rate. 
 The success of the Spec-VLA framework highlights the potential for broader application of speculative execution in VLA prediction scenarios.
 
 #### Proposed Methods
@@ -25,140 +25,78 @@ The success of the Spec-VLA framework highlights the potential for broader appli
 
 #### Practical Advantages 
 * Compared with the previously proposed VLA acceleration methods, such as PD-VLA, the Spec-VLA does not need full-parameter finetuning for the backbone models, which decouples the acceleration framework and the original models, and supports efficient adaptation for downstream tasks.
-* The verification mechanism ensures the generation quality and provides a predefined threshold parameter r to balance the speed-quality tradeoff.
+* The verification mechanism ensures the generation quality and provides a predefined threshold parameter to balance the speed-quality tradeoff.
 * Achieves 22%-42% acceleration in the LIBERO dataset, without compromising the prediction accuracy.
 
 ## Setup Guidance
 #### Requirements & Installation
 
-* Python >= 3.7
-* Pytorch == 1.12.1 (tested with cuda ==  11.3)
-* gcc >= 7.0.0 (for compiling cuda operations. See FAQs if you want to use a lower gcc version)
-* ``git clone && pip install -e .``
-* BeamSearch algorithm for BC-Transformer (``cd dag_search && bash install.sh``)
+* Python >= 3.10
+* Pytorch == 2.2.0 (tested with cuda ==  12.1)
+* Libero == 0.1.0
+* ``pip install -r requirements-min.txt``
+* ``pip install -e .``
 
 ## Main Files
 
-Most codes of the framework are from Fairseq. We mainly add the following files.
-#### setupScript 
-
-`setupScript` contains the scripts of preprocess/training/evaluation/generation of WMT14 De-En Dataset.
-#### fs_plugins
+We derive our resposary from OpenVLA, and provide the impelementation for the SpecVLA framework. The main architecture is listed below: 
 
 ```
-fs_plugins
-├── criterions
-│   ├── nat_dag_loss.py                   # L2R DA-Transformer loss
-│   ├── reverse_dag_loss.py               # R2L DA-Transformer loss
-│   ├── bi_dag_loss.py                    # BC-Transformer loss
-├── custom_ops                            # operations implementations and cuda kernels
-│   ├── dag_best_alignment.cu
-│   ├── logsoftmax_gather.cu
-│   ├── dag_loss.cu
-│   ├── dag_loss.py
-│   ├── rev_dag_loss.py
-│   └── dag_loss.cpp
-├── models
-│   ├── glat_decomposed_with_link.py      # A PyTorch implementation of L2R DA-Transformer
-│   ├── glat_decomposed_with_link_Rev.py  # A PyTorch implementation of R2L DA-Transformer
-│   ├── bi_glat_decomposed_with_link.py   # A PyTorch implementation of BC-Transformer
-│   ├── ls_glat_decomposed_with_link.py   # A lightseq implementation of DA-Transformer
-│   └── ls_*                              # Other files required for lightseq
-├── optimizer
-│   └── ls_adam.py                        # Lightseq Adam
-├── scripts
-│   ├── test_tradeoff.py                  # Parameter search script used in BeamSearch
-│   ├── average_checkpoints.py            # Average checkpoints tricks
-|   └── convert_ls_to_fairseq.py          # Converting lightseq model to fairseq model
-└── tasks
-    └── translation_lev_modified.py
+SpecVLA
+├── openvla
+│   ├── experiments                # Scripts for conducting libero simulation benchmark and speedup test
+│   ├── prismatic                  # Derived from the openvla
+│   ├── scripts                    # Derived from the openvla
+|   └── specdecoding               # SpecVLA implementation
+├── dataset                        # Finetuning dataset 
+└── backbone_models                # Finetuned OpenVLA models
 ```
 
-#### BeamSearch on DAG
+#### Experiment Pipeline
 
-We extend [dag_search](https://github.com/thu-coai/DAG-Search) to implement the Bidirectional Ensemble BeamSearch algorithm.
-
-#### Data Preprocessing
-
-Please follow the [instruction](https://github.com/facebookresearch/fairseq/tree/main/examples/translation#wmt14-english-to-german-convolutional) in Fairseq to prepare the data. For BCKD, download the dataset via the link above.
-
-
-#### Training
-
-**We use a batch size of approximating 64k tokens, so the GPU number * max_tokens * update_freq should be 64k.**
-
-For example, **if you have 4 V100-32 GPUs**, run the following script for training:
-
-```bash
-data_dir=$PROCESSED_DATA_DIR
-checkpoint_dir=$CHECKPOINT_SAVING_DIR
-fairseq-train ${data_dir}  \
-    --user-dir ../DA-Transformer/fs_plugins \
-    --task translation_lev_modified  --noise full_mask \
-    --arch bi_glat_decomposed_link_base \
-    --decoder-learned-pos --encoder-learned-pos \
-    --share-all-embeddings --activation-fn gelu \
-    --apply-bert-init \
-    --links-feature feature:position:share --decode-strategy lookahead \
-    --max-source-positions 128 --max-target-positions 1024 --src-upsample-scale 8.0 \
-    \
-    --criterion bi_nat_dag_loss \
-    --length-loss-factor 0 --max-transition-length 99999 \
-    --glat-p 0.5:0.1@200k --glance-strategy number-random \
-    \
-    --optimizer adam --adam-betas '(0.9,0.999)' --fp16 \
-    --label-smoothing 0.0 --weight-decay 0.01 --dropout 0.1 \
-    --lr-scheduler inverse_sqrt  --warmup-updates 10000   \
-    --clip-norm 0.1 --lr 0.0005 --warmup-init-lr '1e-07' --stop-min-lr '1e-09' \
-    --ddp-backend c10d --torch-dag-loss --torch-dag-best-alignment --torch-dag-logsoftmax-gather  \
-    \
-    --no-epoch-checkpoints \
-    --max-tokens 1639  --update-freq 10 --grouped-shuffling \
-    --max-update 300000 --max-tokens-valid 1639 \
-    --save-interval 1  --save-interval-updates 2215  \
-    --keep-interval-updates 200 \
-    --skip-invalid-size-inputs-valid-test \
-    --seed 0 \
-    --save-dir ${checkpoint_dir} 
+#### Training data generation
 ```
-
-#### Speed up 
-Due to the limitation of development resources, we didn't expand the cuda operation and lightseq accellaration. 
-Use the 
-```--torch-dag-loss --torch-dag-best-alignment --torch-dag-logsoftmax-gather```
-to enable the pytorch implementation.
-
-#### Inference
-
-BC-Transformer provides the Bidirectional Ensemble Searching, in which the beam-search candidate list is partitioned into two identical segments to accommodate two sets of candidates, with the most probable one selected as the model output.
-The BES contains parameters:
-
-* **decode_beamsize**:  Beam size of one directional partitions. The total beam size is `2 * decode_beamsize`. 
-* **decode_direction**: Contains three selections, the `'forward'` and `'backward`' and `'bidirection'`. The `'forward'` and `'backward'` performs a L2R and R2L directional Beam Search on BC Graph, while the `'bidirection'` performs the BES on BC-Graph.
-```bash
-fairseq-generate  ${data_dir} \
-    --gen-subset test --user-dir fs_plugins --task translation_lev_modified \
-    --iter-decode-max-iter 0 --iter-decode-eos-penalty 0 --beam 1 \
-    --remove-bpe --batch-size 16 --seed 0 --skip-invalid-size-inputs-valid-test\
-    --model-overrides "{\"decode_strategy\": \"beamsearch\", \"decode_beta\": 1.1, \
-        \"argmax_token_num\":5, \
-        \"decode_alpha\": 1.4, \"decode_gamma\": 0, \
-        \"decode_lm_path\": None, \
-        \"decode_beamsize\": 200, \"decode_top_cand_n\": 5, \"decode_top_p\": 0.9, \
-        \"decode_max_beam_per_length\": 10, \"decode_max_batchsize\": 32,  \"decode_dedup\": True, \"decode_direction\": \"bidirection\" }" \
-    --path ${average_checkpoint_path} > Generate.Beam.Bidir.1.4.out
+python SpecVLA/openvla/specdecoding/train-scripts/ge_data_all_openvla_goal.py
 ```
-
-#### Average Checkpoints
-
-We average the parameters of the best 5 checkpoints evaluated by the bidirectional lookahead inference.
-Evaluation scripts shown in `setupScript/Inference_Valid_bi.py`.
-
-
-#### BeamSearch
-
-Please install dag_search first, see ``./dag_search/install.sh`` for requirements.
+#### Training Draft models
+```
+export PYTHONPATH='/SpecVLA'
+WANDB_MODE='offline' deepspeed --master_port 23333 --include=localhost:4,5,6,7 "SpecVLA/openvla/specdecoding/train-scripts/train_deepspeed_libero_goal.py" --deepspeed_config "/SpecVLA/openvla/specdecoding/scripts/ds_config.json"
+```
+#### Testing on LIBERO simulation benchmark
+Autoregressive Generation
+```
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/rucheng/run_libero_eval_AR.py\
+  --model_family openvla \
+  --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
+  --task_suite_name libero_goal \
+  --center_crop True
+```
+Speculative Decoding
+```
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/rucheng/run_libero_eval_Speculation_set_params.py \
+    --model_family openvla \
+    --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
+    --task_suite_name libero_goal \
+    --center_crop True
+```
+Speculative Decoding with Relaxed Acceptance
+```
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/new_run_libero_eval_Speculation_set_params.py \
+    --model_family openvla \
+    --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
+    --task_suite_name libero_goal \
+    --center_crop True
+```
 
 ## Citing
 
 Please kindly cite us if you find our papers or codes useful.
+```
+@article{wang2025spec,
+  title={Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance},
+  author={Wang, Songsheng and Yu, Rucheng and Yuan, Zhihang and Yu, Chao and Gao, Feng and Wang, Yu and Wong, Derek F},
+  journal={arXiv preprint arXiv:2507.22424},
+  year={2025}
+}
+```
