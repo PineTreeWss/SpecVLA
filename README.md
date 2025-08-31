@@ -21,7 +21,7 @@ The success of the Spec-VLA framework highlights the potential for broader appli
 
 * Distance-sensitive relaxation of acceptance. We propose to relax the acceptance condition for the VLA prediction scenario while controlling the prediction precision with the predefined relaxation threshold. 
 
-![](Assets/Relax-Figure-2.0-small.jpg)
+&nbsp;&nbsp;&nbsp;&nbsp;![](Assets/Relax-Figure-2.0-small.jpg)
 
 #### Practical Advantages 
 * Compared with the previously proposed VLA acceleration methods, such as PD-VLA, the Spec-VLA does not need full-parameter finetuning for the backbone models, which decouples the acceleration framework and the original models, and supports efficient adaptation for downstream tasks.
