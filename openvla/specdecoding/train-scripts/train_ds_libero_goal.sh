@@ -1,0 +1,2 @@
+export PYTHONPATH='/OpenVLA'
+WANDB_MODE='offline' deepspeed --master_port 23333 --include=localhost:4,5,6,7 "train_deepspeed_libero_goal.py" --deepspeed_config "/OpenVLA/openvla/specdecoding/scripts/ds_config.json"
