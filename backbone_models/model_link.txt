@@ -1,0 +1,4 @@
+Libero-Goal:openvla/openvla-7b-finetuned-libero-goal
+Libero-Object:openvla/openvla-7b-finetuned-libero-object
+Libero-Spatial: openvla/openvla-7b-finetuned-libero-spatial
+Libero-Long: openvla/openvla-7b-finetuned-libero-10
