@@ -1,0 +1,54 @@
+Metadata-Version: 2.4
+Name: openvla
+Version: 0.0.3
+Summary: OpenVLA: Vision-Language-Action Models for Robotics
+Author-email: Moo Jin Kim <moojink@stanford.edu>, Karl Pertsch <pertsch@berkeley.edu>, Siddharth Karamcheti <skaramcheti@cs.stanford.edu>
+Project-URL: homepage, https://github.com/openvla/openvla
+Project-URL: repository, https://github.com/openvla/openvla
+Project-URL: documentation, https://github.com/openvla/openvla
+Keywords: vision-language-actions models,multimodal pretraining,robot learning
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: accelerate>=0.25.0
+Requires-Dist: draccus==0.8.0
+Requires-Dist: einops
+Requires-Dist: huggingface_hub
+Requires-Dist: json-numpy
+Requires-Dist: jsonlines
+Requires-Dist: matplotlib
+Requires-Dist: peft==0.11.1
+Requires-Dist: protobuf
+Requires-Dist: rich
+Requires-Dist: sentencepiece==0.1.99
+Requires-Dist: timm==0.9.10
+Requires-Dist: tokenizers==0.19.1
+Requires-Dist: torch==2.2.0
+Requires-Dist: torchvision==0.17.0
+Requires-Dist: torchaudio==2.2.0
+Requires-Dist: transformers==4.40.1
+Requires-Dist: wandb
+Requires-Dist: tensorflow==2.15.0
+Requires-Dist: tensorflow_datasets==4.9.3
+Requires-Dist: tensorflow_graphics==2021.12.3
+Requires-Dist: dlimp@ git+https://github.com/moojink/dlimp_openvla
+Provides-Extra: dev
+Requires-Dist: black>=24.2.0; extra == "dev"
+Requires-Dist: gpustat; extra == "dev"
+Requires-Dist: ipython; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Requires-Dist: ruff>=0.2.2; extra == "dev"
+Provides-Extra: sagemaker
+Requires-Dist: boto3; extra == "sagemaker"
+Requires-Dist: sagemaker; extra == "sagemaker"

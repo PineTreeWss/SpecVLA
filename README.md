@@ -35,6 +35,7 @@ The success of the Spec-VLA framework highlights the potential for broader appli
 * Pytorch == 2.2.0 (tested with cuda == 12.1)
 * Libero == 0.1.0
 * ``pip install -r requirements-min.txt``
+* ``cd openvla``
 * ``pip install -e .``
 
 ## Main Files
