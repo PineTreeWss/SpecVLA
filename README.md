@@ -17,11 +17,11 @@ The success of the Spec-VLA framework highlights the potential for broader appli
 #### Proposed Methods
 * The Spec-VLA framework is the first SD framework for  Autoregressive VLA generation acceleration. The Spec-VLA utilizes multimodal features and incorporates multiple advanced methodologies for SD, including tree-attention and dynamic draft tree decoding.
 
-![](Assets/spec-vla.jpg)
+&nbsp;&nbsp;&nbsp;![](Assets/spec-vla-small.jpg)
 
 * Distance-sensitive relaxation of acceptance. We propose to relax the acceptance condition for the VLA prediction scenario while controlling the prediction precision with the predefined relaxation threshold. 
 
-![](Assets/Relax-Figure-2.0.jpg)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](Assets/Relax-Figure-2.0-small.jpg)
 
 #### Practical Advantages 
 * Compared with the previously proposed VLA acceleration methods, such as PD-VLA, the Spec-VLA does not need full-parameter finetuning for the backbone models, which decouples the acceleration framework and the original models, and supports efficient adaptation for downstream tasks.
@@ -66,7 +66,7 @@ WANDB_MODE='offline' deepspeed --master_port 23333 --include=localhost:4,5,6,7 "
 #### Testing on LIBERO simulation benchmark
 Autoregressive Generation
 ```
-CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/rucheng/run_libero_eval_AR.py\
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/run_libero_goal_AR.py\
   --model_family openvla \
   --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
   --task_suite_name libero_goal \
@@ -74,7 +74,7 @@ CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiment
 ```
 Speculative Decoding
 ```
-CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/rucheng/run_libero_eval_Speculation_set_params.py \
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/run_libero_goal_Spec.py \
     --model_family openvla \
     --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
     --task_suite_name libero_goal \
@@ -82,7 +82,7 @@ CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiment
 ```
 Speculative Decoding with Relaxed Acceptance
 ```
-CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/new_run_libero_eval_Speculation_set_params.py \
+CUDA_VISIBLE_DEVICES=0 MUJOCO_EGL_DEVICE_ID=0 python /SpecVLA/openvla/experiments/robot/libero/run_libero_goal_Spec_Relaxed.py \
     --model_family openvla \
     --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
     --task_suite_name libero_goal \
