@@ -1,0 +1,21 @@
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_setup.py:_flush():80] Current SDK version is 0.21.0
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_setup.py:_flush():80] Configure stats pid to 412992
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_setup.py:_flush():80] Loading settings from /mnt/public/wangsongsheng/.config/wandb/settings
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_setup.py:_flush():80] Loading settings from /mnt/public/wangsongsheng/home/Projects/20250901-test-specvla/SpecVLA/openvla/specdecoding/train-scripts/wandb/settings
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /mnt/public/wangsongsheng/home/Projects/20250901-test-specvla/SpecVLA/openvla/specdecoding/train-scripts/wandb/offline-run-20250901_215023-0uowaeu0/logs/debug.log
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /mnt/public/wangsongsheng/home/Projects/20250901-test-specvla/SpecVLA/openvla/specdecoding/train-scripts/wandb/offline-run-20250901_215023-0uowaeu0/logs/debug-internal.log
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_init.py:init():830] calling init triggers
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
+config: {'lr': 5e-05, 'bs': 4, 'gradient_accumulation_steps': 1, 'datapath': 'ckpt_libero_goal_debug', 'is_warmup': True, 'num_epochs': 200, 'num_warmup_steps': 2000, 'total_steps': 800000, 'p_w': 0.1, 'v_w': 1.0, 'head_w': 0.1, 'num_workers': 1, 'embeding': True, 'act': 'No', 'data_noise': True, 'noise': 'uniform', 'mean': 0.0, 'std': 0.2, 'residual': 'true,norm', 'max_len': 2048, 'config_path': 'llama_2_chat_7B_config.json', 'b1': 0.9, 'b2': 0.95, 'grad_clip': 0.5, '_wandb': {}}
+2025-09-01 21:50:23,984 INFO    MainThread:412992 [wandb_init.py:init():871] starting backend
+2025-09-01 21:50:24,195 INFO    MainThread:412992 [wandb_init.py:init():874] sending inform_init request
+2025-09-01 21:50:24,198 INFO    MainThread:412992 [wandb_init.py:init():882] backend started and connected
+2025-09-01 21:50:24,199 INFO    MainThread:412992 [wandb_init.py:init():953] updated telemetry
+2025-09-01 21:50:24,214 INFO    MainThread:412992 [wandb_init.py:init():977] communicating run to backend with 90.0 second timeout
+2025-09-01 21:50:24,359 INFO    MainThread:412992 [wandb_init.py:init():1029] starting run threads in backend
+2025-09-01 21:50:24,622 INFO    MainThread:412992 [wandb_run.py:_console_start():2458] atexit reg
+2025-09-01 21:50:24,623 INFO    MainThread:412992 [wandb_run.py:_redirect():2306] redirect: wrap_raw
+2025-09-01 21:50:24,623 INFO    MainThread:412992 [wandb_run.py:_redirect():2375] Wrapping output streams.
+2025-09-01 21:50:24,623 INFO    MainThread:412992 [wandb_run.py:_redirect():2398] Redirects installed.
+2025-09-01 21:50:24,625 INFO    MainThread:412992 [wandb_init.py:init():1075] run started, returning control to user process

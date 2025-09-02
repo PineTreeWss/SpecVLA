@@ -525,26 +525,7 @@ def update_inference_inputs(
         sample_p,
         attention_mask
 ):
-    #print('update inference inputs')
-    #print('prompt embeds shape',prompt_embeds.shape)
-    #print(input_ids.shape)
-    #exit()
-    #print(accept_length)
     prev_input_len = prompt_embeds.shape[1]
-    #print('prev input len',prev_input_len)
-    # Map the best candidate indices to the original indices in the sequence
-    #print('retrive indices',retrieve_indices[best_candidate, : accept_length + 1])
-    #print('select indices',select_indices)
-    #print('input ids')
-    #print(input_ids)
-    #print(accept_length)
-    #print(select_indices)
-    #exit()
-    # Append the tokens from the best candidate to the input sequence
-    #print((input_ids.shape[1]-input_len-1+accept_length)>6)
-    #print(input_ids[:,input_len+1:])
-    #print(accept_length)
-    #print(candidates.shape)
     end_loop = False
     if (input_ids.shape[1]-input_len-1+accept_length)>6:
         accept_length=max(6-(input_ids.shape[1]-input_len-1),0)
@@ -552,64 +533,20 @@ def update_inference_inputs(
     #print('end loop',end_loop)
 
     select_indices = (retrieve_indices[best_candidate, : accept_length + 1] + prev_input_len)
-    #print('accept length',accept_length)
-    #print('valid_drafts_with_error',candidates[None, best_candidate, :].to(input_ids.device))
     input_ids = torch.cat(
             [input_ids, candidates[None, best_candidate, : accept_length + 1].to(input_ids.device)], dim=-1
         )
     prompt_embeds = torch.cat([prompt_embeds,model.ea_layer.embed_tokens(candidates[None, best_candidate, : accept_length + 1].to(input_ids.device))],dim=1)
-    #print('best candidate',best_candidate)
-    #print('accept length +1',accept_length+1)
-    #print('candidate shape',candidates.shape)
-    #print('attention mask shape',attention_mask.shape)
-    #attention_mask = torch.cat(
-     #               (attention_mask, attention_mask.new_ones(attention_mask.shape[0], accept_length+1)), dim=-1
-    #            )
-    #print('promt_embeds with new token',prompt_embeds.shape)
-    #print('new token,',candidates[None, best_candidate, : accept_length + 1])
-    #new_tokens = candidates[None, best_candidate, : accept_length + 1].to(input_ids.device)
-    #print('concated input id',input_ids)
-    #print('select indices',select_indices)
-    # Update the past key values based on the selected tokens
-    # Source tensor that contains relevant past information based on the selected candidate
-    #print('past key values data list',past_key_values_data_list[0][0].shape)
-    #Q:不变list怎么搞，是不是这部分造成的
-    begin = time.time()
     past_key_values_data_list = list(past_key_values_data_list)
     for i in range(len(past_key_values_data_list)):
         past_key_values_data = past_key_values_data_list[i]
-        #print(len(past_key_values_data))
         past_key_values_data = torch.cat((past_key_values_data[0].unsqueeze(0),past_key_values_data[1].unsqueeze(0)),dim=0)
-        #print('past key values data shape',past_key_values_data.shape)
-        #print(past_key_values_data.shape)
-        #print(past_key_values_data)
         tgt = past_key_values_data[..., select_indices.to(past_key_values_data.device), :]
-        #print('tgt shape',tgt.shape)
         # Destination tensor where the relevant past information will be stored
         past_key_values_data[..., prev_input_len: prev_input_len + tgt.shape[-2], :] = tgt
-        #print(dst.shape)
-        # Copy relevant past information from the source to the destination
-        #dst.copy_(tgt, non_blocking=True)
-        #print(prev_input_len + tgt.shape[-2])
         past_key_values_data_list[i] = past_key_values_data[..., :(prev_input_len + tgt.shape[-2]),:]
-        #print('data shape',past_key_values_data_list[i].shape)
-        #print(past_key_values_data)
-        #print(torch.sum(torch.eq(past_key_values_data_list[i][0,0,-1,0],past_key_values_data_list[i][0,0, select_indices.to(past_key_values_data.device), 0])))
-    end = time.time()
-    print('update_kvcache_time',end-begin)
-    #print('past key values data list',past_key_values_data_list[0].shape)
-    #for item in past_key_values_data_list:
-    #    print(item.shape)
-    #past_key_values_data_list = past_key_values_data_list
-    # Update the current length tensor (currently only support batch size is 1)
-    #current_length_data.fill_(prev_input_len + tgt.shape[-2])
-    #print('best candidate',best_candidate)
     retrieve_hidden_state_new = hidden_state_new[:, retrieve_indices]
-    #retrieve_hidden_embedding_new = hidden_embedding_new[:, retrieve_indices]
     accept_hidden_state_new = retrieve_hidden_state_new[:, best_candidate, : accept_length + 1]
-    #accept_hidden_embedding_new = retrieve_hidden_embedding_new[:, best_candidate, : accept_length + 1]
-    # token=model.base_model.lm_head(accept_hidden_state_new[:,-1]).argmax()
-    # token=token[None,None]
     prob = sample_p
     if logits_processor is not None:
         token = torch.multinomial(prob, 1)
@@ -617,53 +554,17 @@ def update_inference_inputs(
     else:
         token = torch.argmax(prob)
         token = token[None, None]
-    # hidden_state = torch.cat((hidden_state, accept_hidden_state_new), dim=1)
-    #draft_tokens, retrieve_indices,tree_mask,tree_position_ids = model.ea_layer.topK_genrate(accept_hidden_state_new,
-   #                                           input_ids=torch.cat((input_ids, token.to(input_ids.device)), dim=1),
-   #                                          head=model.base_model.lm_head,logits_processor=logits_processor)
-    #print('input_ids',input_ids)
-    #print('token',token)
-    #input_embeds = model.embed_tokens()(torch.cat((input_ids, token.to(input_ids.device))))
     if end_loop:
         token = torch.tensor([[model.tokenizer.eos_token_id]]).to(token.device)
     input_tokens = torch.cat((input_ids, token.to(input_ids.device)),dim=1)
     if token == model.tokenizer.eos_token_id:
-        #print('early quit')
         new_token += accept_length + 1
         return input_tokens, None, None,None,None, new_token,None,None, None
-    #retrieve_hidden_embedding_new = retrieve_hidden_embedding_new[:,1:,:]
     input_token_embeds = model.ea_layer.embed_tokens(token)
-    #retrieve_hidden_embedding_new = torch.cat((retrieve_hidden_embedding_new,input_token_embeds),dim=1)
-    #if accept_length == 0:
-    #    input_embeds = torch.cat((prompt_embeds[:,:,:],input_token_embeds),dim=1)
-    #else:
-    #    input_embeds = torch.cat((prompt_embeds[:,:,:],accept_hidden_embedding_new[:,:,:],input_token_embeds),dim=1)
     ea_layer_input_embeds = torch.cat((prompt_embeds,input_token_embeds),dim=1)
     ea_layer_input_hiddens=accept_hidden_state_new
-    #print('embeds and hiddens shape:')
-    #print(ea_layer_input_embeds.shape)
-    #print(ea_layer_input_hiddens.shape)
-    #ea_layer_input_hiddens = torch.cat((prompt_hidden_states,accept_hidden_state_new),dim=1)
-    #output_hidden_embedding_new = accept_hidden_embedding_new[:,1:,:]
-    #output_hidden_embedding_new = torch.cat((output_hidden_embedding_new,input_token_embeds),dim=1)
-    #print(accept_hidden_state_new.shape)
-    #exit()
-    #print(accept_hidden_state_new.shape)
-    #print(prompt_hidden_states.shape)
-    #output_hidden_state_new = torch.cat((prompt_hidden_states,accept_hidden_state_new),dim=1)
-    #print(accept_hidden_state_new.shape)
-    #print(input_embeds.shape)
-    #print('input shape:')
-    #print(ea_layer_input_hiddens.shape)
-    #print(ea_layer_input_embeds.shape)
-    #print('update inference inputs')
-    time_0 = time.time()
     draft_tokens, retrieve_indices,tree_mask,tree_position_ids = model.ea_layer.topK_genrate(ea_layer_input_hiddens, input_tokens ,ea_layer_input_embeds,model.base_model.language_model.lm_head,logits_processor)
-    time_1 = time.time()
     new_token += accept_length + 1
-    #model.ea_layer.reset_kv()
-    #print(past_key_values_data_list[0][1][0][-1][-1])
-    print('topk_generate_time',time_1-time_0)
     return input_ids, draft_tokens, retrieve_indices, tree_mask, tree_position_ids, new_token, prompt_embeds, past_key_values_data_list, attention_mask
 
 

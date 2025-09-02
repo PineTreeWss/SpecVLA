@@ -1,5 +1,5 @@
-CUDA_VISIBLE_DEVICES=7 MUJOCO_EGL_DEVICE_ID=7 python /SpecVLA/openvla/experiments/robot/libero/new_run_libero_eval_Speculation_set_params.py \
+CUDA_VISIBLE_DEVICES=7 MUJOCO_EGL_DEVICE_ID=7 python PATH_TO_SPECVLA/openvla/experiments/robot/libero/run_libero_goal_Spec_Relaxed.py \
     --model_family openvla \
-    --pretrained_checkpoint /openvla-7b-finetuned-libero-goal \
+    --pretrained_checkpoint PATH_TO_SPECVLA/backbone_models/openvla-7b-finetuned-libero-goal \
     --task_suite_name libero_goal \
     --center_crop True

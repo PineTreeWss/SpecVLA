@@ -10,9 +10,9 @@ parser.add_argument('--local_rank', type=int, default=1,
 parser = deepspeed.add_config_arguments(parser)
 cmd_args = parser.parse_args()
 #os.chdir("/mnt/public/wangsongsheng/home/Projects/20250223-OpenVLA")
-basepath="/openvla-7b-finetuned-libero-goal"
-cpdir="/openvla/specdecoding/scripts/ckpt_libero_goal_debug"
-tmpdir="/openvla/specdecoding/libero_goal_dataset"
+basepath="PATH_TO_SPECVLA/backbone_models/openvla-7b-finetuned-libero-goal"
+cpdir="ckpt_libero_goal_debug_ckpt"
+tmpdir="libero_goal_dataset_debug"
 train_config = {
     "lr": 5e-5,
     "bs": 4,
@@ -34,7 +34,7 @@ train_config = {
     "std": 0.2,
     "residual": "true,norm",
     "max_len": 2048,
-    "config_path": "/openvla/specdecoding/scripts/llama_2_chat_7B_config.json",
+    "config_path": "llama_2_chat_7B_config.json",
     "b1": 0.9,
     "b2": 0.95,
     "grad_clip": 0.5,
@@ -86,7 +86,7 @@ from openvla.prismatic.extern.hf.configuration_prismatic import OpenVLAConfig
 from openvla.prismatic.extern.hf.modeling_prismatic import OpenVLAForActionPrediction
 class FinetuneConfig:
     # fmt: off
-    vla_path: str = "../../backbone_models/openvla-7b-finetuned-libero-goal"                            # Path to OpenVLA model (on HuggingFace Hub)
+    vla_path: str = "PATH_TO_SPECVLA/backbone_models/openvla-7b-finetuned-libero-goal"                            # Path to OpenVLA model (on HuggingFace Hub)
 # cfg=parser.parse_args()
 cfg=FinetuneConfig()
 AutoModelForVision2Seq.register(OpenVLAConfig, OpenVLAForActionPrediction)

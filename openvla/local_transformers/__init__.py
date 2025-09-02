@@ -1,0 +1,2 @@
+# 从本地模块中导出GenerationMixin
+from .generation_utils import SpeculativeGenerationMixin

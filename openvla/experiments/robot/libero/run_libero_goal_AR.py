@@ -60,7 +60,7 @@ class GenerateConfig:
     # Model-specific parameters
     #################################################################################################################
     model_family: str = "openvla"                    # Model family
-    pretrained_checkpoint: Union[str, Path] = "/openvla-7b-finetuned-libero-goal"     # Pretrained checkpoint path
+    pretrained_checkpoint: Union[str, Path] = "PATH_TO_SPECVLA/backbone_models/openvla-7b-finetuned-libero-goal"     # Pretrained checkpoint path
     load_in_8bit: bool = False                       # (For OpenVLA only) Load with 8-bit quantization
     load_in_4bit: bool = False                       # (For OpenVLA only) Load with 4-bit quantization
     parallel_draft: bool = False
@@ -70,7 +70,7 @@ class GenerateConfig:
     #################################################################################################################
     # LIBERO environment-specific parameters
     #################################################################################################################
-    spec_checkpoint: Union[str, Path] = "/OpenVLA/openvla/ckpt_state"
+    spec_checkpoint: Union[str, Path] = "PATH_TO_SPECVLA/openvla/specdecoding/train-scripts/ckpt_libero_goal_debug_ckpt/STATE_ID"
     task_suite_name: str = "libero_goal"          # Task suite. Options: libero_spatial, libero_object, libero_goal, libero_10, libero_90
     num_steps_wait: int = 10                         # Number of steps to wait for objects to stabilize in sim
     num_trials_per_task: int = 50                    # Number of rollouts per task
@@ -120,7 +120,7 @@ def eval_libero(cfg: GenerateConfig) -> None:
         processor = get_processor(cfg)
 
     # Initialize local logging
-    target_dir = "/OpenVLA/openvla/experiments/robot/libero/libero_goal_AR"
+    target_dir = "PATH_TO_SPECVLA/openvla/specdecoding/test-speed/libero_goal_AR"
     os.makedirs(target_dir,exist_ok=True)
     run_id = f"EVAL-{cfg.task_suite_name}-{cfg.model_family}-{DATE_TIME}"
     if cfg.run_id_note is not None:

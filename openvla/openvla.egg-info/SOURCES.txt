@@ -10,6 +10,8 @@ experiments/robot/libero/run_libero_eval.py
 experiments/robot/libero/run_libero_goal_AR.py
 experiments/robot/libero/run_libero_goal_Spec.py
 experiments/robot/libero/run_libero_goal_Spec_Relaxed.py
+local_transformers/__init__.py
+local_transformers/generation_utils.py
 openvla.egg-info/PKG-INFO
 openvla.egg-info/SOURCES.txt
 openvla.egg-info/dependency_links.txt
@@ -121,3 +123,6 @@ specdecoding/model/utils_origin.py
 specdecoding/model/utils_others.py
 specdecoding/train-scripts/ge_data_all_openvla_token_only_libero_goal.py
 specdecoding/train-scripts/train_deepspeed_libero_goal.py
+specdecoding/train-scripts/ckpt_libero_goal_debug_ckpt/state_0/zero_to_fp32.py
+specdecoding/train-scripts/ckpt_libero_goal_debug_ckpt/state_10/zero_to_fp32.py
+specdecoding/train-scripts/ckpt_libero_goal_debug_ckpt/state_20/zero_to_fp32.py

@@ -1087,7 +1087,6 @@ class SpecVLAforActionPrediction(nn.Module):
         accept_threshold=None,
         **kwargs
     ):
-        #print('start eagenerate')
         temperature=0.0
         top_p=0.0
         top_k=0.0
@@ -1106,51 +1105,18 @@ class SpecVLAforActionPrediction(nn.Module):
         # Initialize the past key and value states
         tokenizer = self.get_tokenizer()
         max_steps = max_new_tokens
-        #model = self
-        #print('base model')
         model_inputs = self.base_model.prepare_inputs_for_generation(input_ids, **kwargs)
-        #print('use cache')
-        #print(model_inputs['use_cache'])
-        #print(model_inputs['input_ids'].shape)
-        #exit()
-        #print('model inputs attn mask',model_inputs['attention_mask'])
-        #print(model_inputs['use_cache'].shape)
-        #print(model_inputs.keys())
         reset_tree_mode(self.ea_layer)
-        #print('initialize tree')
-        #print(self.ea_layer.)
         time_0 = time.time()
         draft_tokens, retrieve_indices, tree_mask, tree_position_ids, logits, prompt_hidden_states, sample_token, past_key_value_data,prompt_embeds,attention_mask = initialize_tree(model_inputs, self, logits_processor)
-        #print('other')
         input_len = input_ids.shape[1]-1
-        #print('input_prefix',input_ids)
-        #exit()
-        #print('reset tree mode')
-        #new_token = 0
         max_length = max_length - self.ea_layer.total_tokens - 10
-        #print('start loop')
         new_token = 0
-        time_1 = time.time()
-        #current_length_data = torch.zeros(self.base_model.language_model.config.num_hidden_layers, dtype=torch.long, device="cpu")
-        #print('past key value data length')
-        #print(len(past_key_value_data))
-        #print(len(past_key_value_data[0]))
-        #print(len(past_key_value_data[0][0]))
-        #print(past_key_value_data[0][0][0].shape)
-        #model_inputs["cache_position"] = torch.arange(input_embed_len, device=input_ids.device)
-        #model_inputs['use_cache']=True
-        #model_inputs['attention_mask']=outputs.attention_mask
-        time_list = []
         for idx in range(max_length):
             # with Timer("all"):
             cycle_begin_time = time.time()
             self.base_model.language_model.tree_mask = tree_mask
             draft_tokens = draft_tokens.to(input_ids.device)
-            #print('tree decoding')
-            #print('draft tokens',draft_tokens)
-            #print('attention mask',attention_mask)
-            #print('tree position ids',tree_position_ids)
-            #print('retrieve indices',retrieve_indices)
             logits, hidden_state_new,hidden_embedding_new,past_kv_data_new,outputs= tree_decoding(
                 self,
                 prompt_embeds,
@@ -1162,33 +1128,11 @@ class SpecVLAforActionPrediction(nn.Module):
                 retrieve_indices,
                 #draft_logit=draft_logit
             )
-            #time_list.append(time.time())
-            #print('draft logits',draft_logit)
-            tree_decoding_time = time.time()
-            #print('past kv data new shape')
-            #print(len(past_kv_data_new))
-            #print(len(past_kv_data_new[0]))
-            #print('shape 3',past_kv_data_new[0][0].shape)
             draft_tokens = torch.cat((draft_tokens, padding), dim=1)
             candidates = draft_tokens[0, retrieve_indices]
-            #print('candidates',candidates)
-            #print('accept threshold',accept_threshold)
-            #print('evaluate_posterior')
             best_candidate, accept_length, sample_p = evaluate_posterior(
                 logits, candidates, logits_processor,accept_threshold=accept_threshold
             )
-            #print('candidates',candidates[best_candidate])
-            #print('accept_length',accept_length)
-            #print('input tokens',input_ids)
-            #print(accept_length)
-            #print('accept length',accept_length)
-            #print('update inference inputs')
-            #model_inputs = self._update_model_kwargs_for_generation(
-            #    outputs,
-            ##    model_inputs,
-            #    is_encoder_decoder=self.config.is_encoder_decoder,
-            #)
-            evaluate_posterior_time = time.time()
             input_ids, draft_tokens, retrieve_indices, tree_mask, tree_position_ids, new_token,prompt_embeds,past_key_value_data,attention_mask = update_inference_inputs(
                 prompt_embeds,
                 #prompt_hidden_states,
@@ -1208,18 +1152,6 @@ class SpecVLAforActionPrediction(nn.Module):
                 sample_p,
                 attention_mask
             )
-            update_time = time.time()
-            #print('after update')
-            #print('prompt embeds',prompt_embeds.shape)
-            #print('draft tokens',draft_tokens)
-            #print('attention mask',attention_mask)
-            #print('tree position ids',tree_position_ids)
-            #print('retrieve indices',retrieve_indices)
-            #print(input_ids)
-            print('output')
-            print('update_time',update_time-evaluate_posterior_time)
-            print('evaluate_posterior',evaluate_posterior_time-tree_decoding_time)
-            print('drafting time',tree_decoding_time-cycle_begin_time)
             if self.tokenizer.eos_token_id in input_ids[0, input_len:].tolist():
                 break
             if new_token > max_new_tokens:
@@ -1272,45 +1204,12 @@ class SpecVLAforActionPrediction(nn.Module):
                input_ids, logits_processor=None,**kwargs
             )
         token = torch.tensor(tokens).to(input_ids.device)
-        print('tokens',tokens)
-        #print('token',token)
-        #print('predict action finished')
-        #print(action)
-        #print(token)
-        #print(hidden)
-    #outputs['use_cache']=True
-    #这里是[p,e_0]
-    #print(outputs.keys())
-    #print('past kv shape')
-    ##print(len(outputs.past_key_values[0]))
-    #print(len(outputs.past_key_values[0][0]))
-    #print(outputs.past_key_values[0][0][0].shape)
-    #exit()
-        #print(input_embeds)
-        #exit()
         input_embeds = hidden[0]
-        #print(len(hidden))
-        #print(len(input_embeds))
-        #print('length')
-        #print(input_embeds[0].shape[0]-1)
-        #length = 278
-        #print(input_ids.device)
         hidden_states = hidden[1]
         hidden_states = torch.cat([item for item in hidden[1]],dim=0).to(input_ids.device)
         input_embeds = torch.cat([item for item in hidden[0]],dim=0).to(input_ids.device)
         #print(input_embeds.device)
         input_token_embeds = self.ea_layer.embed_tokens(torch.tensor([2]).to(input_ids.device))
-        #print(input_embeds[:,-1]==input_token_embeds)
-        #print(input_embeds.shape)
-        #print(input_embeds.shape)
-        #print(input_token_embeds.shape)
-        #ea_layer_input_embeds = input_embeds
         ea_layer_input_embeds = torch.cat((input_embeds,input_token_embeds),dim=0)
-       # hidden_padding = (torch.zeros(1, 1, dtype=torch.long) - 1).to(ea_layer_input_embeds.device)
-    # Clone the output hidden states
-        #draft_tokens, retrieve_indices,tree_mask,tree_position_ids = self.ea_layer.topK_genrate(hidden_states, input_ids,ea_layer_input_embeds,model.base_model.language_model.lm_head, logits_processor)
-        #model.ea_layer.reset_kv()
-        #print(hidden_states.shape)
-        #print(ea_layer_input_embeds.shape)
         self.ea_layer._eval_top_k(hidden_states,token, ea_layer_input_embeds,self.base_model.language_model.lm_head, 0,logits_processor)
         return action,None,None

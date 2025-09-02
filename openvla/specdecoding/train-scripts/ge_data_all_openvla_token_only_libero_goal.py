@@ -19,7 +19,7 @@ class GenerateConfig:
     # Model-specific parameters
     #################################################################################################################
     model_family: str = "openvla"                    # Model family
-    pretrained_checkpoint: Union[str, Path] = "../../backbone_models/openvla-7b-finetuned-libero-goal"     # Pretrained checkpoint path
+    pretrained_checkpoint: Union[str, Path] = "PATH_TO_SpecVLA/backbone_models/openvla-7b-finetuned-libero-goal"     # Pretrained checkpoint path
     load_in_8bit: bool = False                       # (For OpenVLA only) Load with 8-bit quantization
     load_in_4bit: bool = False                       # (For OpenVLA only) Load with 4-bit quantization
 
@@ -43,22 +43,23 @@ class GenerateConfig:
     wandb_entity: str = "YOUR_WANDB_ENTITY"          # Name of entity to log under
 
     seed: int = 7                                    # Random Seed (for reproducibility)
-
+    use_spec: bool = False
 # cfg=parser.parse_args()
 gen_model_cfg=GenerateConfig()
 
 class DataGenerationConfig:
     # fmt: off
-    vla_path: str = "../../backbone_models/openvla-7b-finetuned-libero-goal"                            # Path to OpenVLA model (on HuggingFace Hub)
-
+    vla_path: str = "PATH_TO_SpecVLA/backbone_models/openvla-7b-finetuned-libero-goal"                            # Path to OpenVLA model (on HuggingFace Hub)
+    shuffle_buffer_size: int = 100_000                              # Dataloader shuffle buffer size (can reduce if OOM)
+    image_aug: bool = True                                          # Whether to train with image augmentations
     # Directory Paths
-    data_root_dir: Path = Path("../../dataset/modified_libero_rlds")        # Path to Open-X dataset directory
+    data_root_dir: Path = Path("PATH_TO_SpecVLA/dataset/modified_libero_rlds")        # Path to Open-X dataset directory
     dataset_name: str = "libero_goal_no_noops"                                # Name of fine-tuning dataset (e.g., `droid_wipe`)
     batch_size: int = 1                                          # Generation bsz
 #暂时粘贴过来
 import os
-os.system("export PYTHONPATH=PATH_TO_SPECVLA")
-os.chdir("PATH_TO_SPECVLA")
+os.system("export PYTHONPATH=PATH_TO_SpecVLA")
+os.chdir("PATH_TO_SpecVLA")
 os.environ['RANK']='1'
 os.environ['WORLD_SIZE']='1'
 os.environ['MASTER_ADDR']='localhost'
@@ -142,7 +143,7 @@ def writedata(name,data_point):
 
 #from transformers.modeling_outputs import CausalLMOutputWithPast
 gen_model_cfg.unnorm_key = gen_model_cfg.task_suite_name
-outdir = '/specdecoding/libero_goal_dataset_debug'
+outdir = 'libero_goal_dataset'
 sample_num = 0
 write_sample_num = 0
 for batch_idx, batch in enumerate(dataloader):
@@ -163,8 +164,7 @@ for batch_idx, batch in enumerate(dataloader):
         sample_num += 1
         if sample_num % 1000 == 0:
             print(sample_num)
-        #elif (sample_num==dataloader.__len__()):
-        elif (sample_num==10):
+        elif (sample_num==dataloader.__len__()):
             break 
 print('generation ended')
 print('sample num',sample_num)
