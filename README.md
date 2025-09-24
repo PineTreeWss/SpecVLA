@@ -17,11 +17,11 @@ The success of the Spec-VLA framework highlights the potential for broader appli
 #### Proposed Methods
 * The Spec-VLA framework is the first SD framework for  Autoregressive VLA generation acceleration. The Spec-VLA utilizes multimodal features and incorporates multiple advanced methodologies for SD, including tree-attention and dynamic draft tree decoding.
 
-&nbsp;&nbsp;&nbsp;![](assets/spec-vla.jpg)
+&nbsp;&nbsp;&nbsp;![](assets/spec-vla-small.jpg)
 
 * Distance-sensitive relaxation of acceptance. We propose to relax the acceptance condition for the VLA prediction scenario while controlling the prediction precision with the predefined relaxation threshold. 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](Assets/Relax-Figure-2.0.jpg)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![](assets/Relax-Figure-2.0-small.jpg)
 
 #### Practical Advantages 
 * Compared with the previously proposed VLA acceleration methods, such as PD-VLA, the Spec-VLA does not need full-parameter finetuning for the backbone models, which decouples the acceleration framework and the original models, and supports efficient adaptation for downstream tasks.
