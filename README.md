@@ -52,7 +52,11 @@ SpecVLA
 ├── dataset                        # Finetuning dataset 
 └── backbone_models                # Finetuned OpenVLA models
 ```
+## Draft Model Checkpoints (LIBERO)
 
+We provide pretrained draft model checkpoints for all four LIBERO task suites(Goal,Object,Spatial and 10), which can be directly used in Spec-VLA speculative decoding without additional training.
+All draft model checkpoints are available at the following Google Drive link:
+[https://drive.google.com/drive/folders/1HD_yXBWnyVwpMh49QnkhmpQIYsnVOHTD?usp=share_link](https://drive.google.com/drive/folders/1HD_yXBWnyVwpMh49QnkhmpQIYsnVOHTD?usp=share_link)
 #### Experiment Pipeline
 
 #### Training data generation
