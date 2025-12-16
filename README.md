@@ -56,7 +56,7 @@ SpecVLA
 
 We provide pretrained draft model checkpoints for all four LIBERO task suites. Each checkpoint can be directly used for Spec-VLA speculative decoding without additional training.
 
-| LIBERO Task Suite | Draft Model Checkpoint |
+| LIBERO Task Suite | Draft Model Checkpoint Link|
 |-------------------|------------------------|
 | **LIBERO Goal**   | https://drive.google.com/drive/folders/1W7nBHM9-bf9tq4NQDUfles583OUfrtLv?usp=share_link |
 | **LIBERO Object** | https://drive.google.com/drive/folders/1HHQv5iRMXRSfajjIgB62h_jMGboXu250?usp=share_link |
